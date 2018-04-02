@@ -1,0 +1,7 @@
+--- # This playbook creates and runs a docker-registry
+- hosts: centos7
+  roles:
+    - { role: install-user, tags: [ 'uninstall' ] }
+#    - name: install-docker
+#    - name: registry-setup
+#  tags: uninstall

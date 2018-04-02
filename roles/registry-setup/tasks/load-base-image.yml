@@ -1,0 +1,5 @@
+---
+
+- name: Load registry:2 image
+  become: yes
+  command: "docker pull {{ docker_registry_container }}"

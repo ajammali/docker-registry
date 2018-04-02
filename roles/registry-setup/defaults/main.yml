@@ -1,0 +1,12 @@
+---
+# Specific variables
+
+no_proxy: ""
+
+docker_service_d: /etc/systemd/system/docker.service.d/
+
+certs_repo: "/opt/docker/certs/"
+
+start_registry_server: "docker run -d -p 443:443 --name registry -e STORAGE_PATH=/docker-registry -v /data/docker-registry:/docker-registry -v /opt/docker/certs/:/opt/docker/certs/ -e REGISTRY_HTTP_ADDR=0.0.0.0:443 -e REGISTRY_HTTP_TLS_CERTIFICATE=/opt/docker/certs/ca.crt -e REGISTRY_HTTP_TLS_KEY=/opt/docker/certs/ca.key registry:2"
+
+start_registry_server_without_cacerts: "docker run -d -p 5000:5000 --name registry -e STORAGE_PATH=/data/docker-registry -v /data/docker-registry:/data/docker-registry registry:2"

@@ -1,0 +1,14 @@
+---
+# Reload daemon
+- name: Reload systemd
+  become: yes
+  become_user: root
+  command: systemctl daemon-reload
+
+# Restart docker
+- name: Restart docker
+  become: yes
+  become_user: root
+  service:
+    name: docker
+    state: restarted

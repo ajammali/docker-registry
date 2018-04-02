@@ -1,0 +1,78 @@
+---
+# Ensure older versions of docker and its dependencies are not installed
+- name: Ensure old versions of Docker along with its dependencies are not installed.
+  become: yes
+  package:
+    name: '{{ item }}'
+    state: absent
+  with_items:
+    - docker
+    - docker-common
+    - docker-engine
+    - docker-selinux
+    - docker-ce
+    - container-selinux
+  tags: uninstall
+
+- name: Delete old filesystem /data/docker-registry
+  become: yes
+  file:
+    path: "{{ registry_data_repo }}"
+    state: absent
+  tags: uninstall
+
+- name: Delete old symlinks
+  become: yes
+  file:
+    path: "{{ item }}"
+    state: absent
+  with_items:
+    - /var/lib/docker
+    - /var/lib/registry
+  tags: uninstall
+
+- name: Create a new filesystem
+  become: yes
+  file:
+    path: "{{ registry_data_repo }}"
+    state: directory
+    mode: 0775
+
+- name: Install dependencies
+  become: yes
+  package:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - lvm2
+    - device-mapper
+    - device-mapper-persistent-data
+    - device-mapper-event
+    - device-mapper-libs
+    - device-mapper-event-libs
+
+- name: Install docker-ce
+  become: yes
+  package:
+    name: docker-ce-{{ docker.version }}
+    state: present
+
+- name: "Ensure Docker is {{ docker.start | ternary('started','stopped') }}"
+  service: name=docker state={{ docker.start | ternary('restarted','stopped') }} enabled={{ docker.service_enabled }}
+  become: yes
+
+- name: Copy registry content to new filesystem
+  become: yes
+  shell: /bin/scp -r {{ docker_lib_folder }}* {{ registry_data_repo }}
+
+- name: Delete old filesystem /var/lib/docker
+  become: yes
+  file: name=/var/lib/docker state=absent
+
+- name: Replace old filesystem by a symlink to /data/docker-registry
+  become: yes
+  command: sudo ln -s /data/docker-registry/ /var/lib/docker
+
+- name: Add a new symlink by the name registry/
+  become: yes
+  command: sudo ln -s /data/docker-registry/ /var/lib/registry

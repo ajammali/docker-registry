@@ -1,0 +1,8 @@
+--- # This playbook creates and runs a docker-registry
+- hosts: centos7
+  tasks:
+    - include_vars: "roles/install-docker/defaults/main.yml"
+  roles:
+#    - name: install-user
+    - name: install-docker
+    - name: registry-setup

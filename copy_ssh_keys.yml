@@ -1,0 +1,6 @@
+---
+- hosts: reactive_platform
+  gather_facts: no
+  become: yes
+  roles:
+    - { role: ssh-keys, when: "(inventory_hostname != 'localhost') and (inventory_hostname != 'poste_dev')" }

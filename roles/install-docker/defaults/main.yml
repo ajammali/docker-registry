@@ -1,0 +1,17 @@
+---
+
+docker:
+  version: 18.03.0.ce-1.el7.centos.x86_64
+  start: true
+  service_enabled: yes
+
+registry_data_repo: "/data/docker-registry/"
+
+docker_lib_folder: "/var/lib/docker/"
+
+docker_registry_playbook: /etc/docker-registry.yml
+
+registry_repo: /etc/docker/registry/
+
+docker_service_d_repo: "/etc/systemd/system/docker.service.d"
+

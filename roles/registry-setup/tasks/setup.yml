@@ -1,0 +1,90 @@
+---
+# This file describes the set of tasks that will be executed for docker registry creation and start
+
+# Delete already-created certs and config directories
+- name: Delete certs, config and proxy repositories if exist
+  become: yes
+  file:
+    path: "{{ item }}"
+    state: absent
+  with_items:
+    - "{{ certs_repo }}"
+    - "{{ config_file }}"
+    - "{{ docker_service_d }}"
+  ignore_errors: yes
+  tags: uninstall
+
+# Create certs directory
+- name: Create certs repository
+  become: yes
+  file:
+    path: "{{ certs_repo }}"
+    state: directory
+
+# Create config directory
+- name: Add config file
+  become: yes
+  file:
+    path: "{{ config_file }}"
+    state: directory
+
+# Deploy ca-certs files
+- name: Deploy ca-certs files
+  become: yes
+  copy:
+    src: "{{ item }}"
+    dest: "{{ certs_repo }}"
+  with_fileglob: files/ca_certs/*
+  notify:
+    - Reload systemd
+    - Restart docker
+
+# Install config file
+- name: Ensure docker-registry is using the config file
+  become: yes
+  template:
+    src: docker_registry_conf.yml.j2
+    dest: "{{ config_file }}"
+  notify:
+    - Reload systemd
+    - Restart docker
+
+# Create a new repo for proxy config files
+- name: Create setup repository
+  become: yes
+  file:
+    path: "{{ docker_service_d }}"
+    state: directory
+    mode: 0750
+  tags: with_proxy
+
+# Install http-proxy file
+- name: Install http-proxy
+  become: yes
+  template:
+    src: docker_http_proxy.conf.j2
+    dest: "{{ http_proxy_file }}"
+  tags: with_proxy
+
+# Install https-proxy file
+- name: Install https-proxy
+  become: yes
+  template:
+    src: docker_https_proxy.conf.j2
+    dest: "{{ https_proxy_file }}"
+  tags: with_proxy
+
+# Install override file
+- name: Ensure docker uses the proxy and the overlay storage driver
+  become: yes
+  template:
+    src: docker_override.conf.j2
+    dest: "{{ docker_service_d }}"
+  notify:
+    - Reload systemd
+    - Restart docker
+  tags: with_proxy
+
+# Restart docker if updated
+- name: Flush handlers in order to restart Docker if updated
+  meta: flush_handlers

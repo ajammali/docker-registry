@@ -1,0 +1,11 @@
+---
+
+- name: Start registry server with authorization certifcates
+  become: yes
+  command: "{{ start_registry_server }}"
+  tags: with_cacerts
+
+- name: Start registry server without authorization certifcates
+  become: yes
+  command: "{{ start_registry_server_without_cacerts }}"
+  tags: without_cacerts

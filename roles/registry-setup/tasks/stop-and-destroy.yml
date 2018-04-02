@@ -1,0 +1,23 @@
+--- # This playbook will kill the registry server and delete its container
+
+- name: Check if docker registry container is created
+  become: yes
+  command: docker inspect {{ registry_name }}
+  register: container_status
+  ignore_errors: yes
+  tags: uninstall
+
+- name: Stop registry server
+  become: yes
+  command: "docker container stop {{ registry_name }}"
+  register: stop_registry
+  ignore_errors: yes
+  when: "'No such object: registry' not in container_status.stderr"
+  tags: uninstall
+
+- name: Delete registry container
+  become: yes
+  command: "docker container rm -v {{ registry_name }}"
+  ignore_errors: yes
+  when: "'No such object: registry' not in container_status.stderr"
+  tags: uninstall

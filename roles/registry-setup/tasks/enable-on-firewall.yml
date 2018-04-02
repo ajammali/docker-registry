@@ -1,0 +1,12 @@
+---
+- name: Make sure firewall is up and running
+  become: yes
+  become_user: root
+  command: "systemctl enable firewalld && systemctl start firewalld"
+  ignore_errors: yes
+
+- name: Open registry's port on firewall
+  become: yes
+  become_user: root
+  command: "firewall-cmd --permanent --add-port=5000/tcp && firewall-cmd --reload"
+  ignore_errors: yes

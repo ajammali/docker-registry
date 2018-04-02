@@ -1,0 +1,33 @@
+---
+# Default variables
+
+docker_registry_https_port : 443
+
+docker_registry_default_port : 5000
+
+docker_registry_container: "registry:2"
+
+docker_registry_container_name: "registry-srv"
+
+docker_registry_conf_dir: /etc/docker-registry
+
+http_proxy_file: "/etc/systemd/system/docker.service.d/http-proxy.conf"
+
+https_proxy_file: "/etc/systemd/system/docker.service.d/https-proxy.conf"
+
+config_file: "/etc/docker/registry/config.yml"
+
+ansible_distribution_major_version: 7
+
+# Epel-release repos configuration
+#epel_repo_url: "https://dl.fedoraproject.org/pub/epel/epel-release-latest-{{ ansible_distribution_major_version }}.noarch.rpm"
+#epel_repo_gpg_key_url: "https://dl.fedoraproject.org/pub/epel/RPM-GPG-KEY-EPEL-{{ ansible_distribution_major_version }}"
+#epel_repofile_path: "/etc/yum.repos.d/epel.repo"
+
+# HTTP/HTTPS proxy
+http_proxy: "http://proxy-link.com:3131/"
+https_proxy: "https://proxy-link.com:3131/"
+
+# Registry servers name
+registry_name: registry
+

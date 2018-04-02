@@ -1,0 +1,8 @@
+---
+
+# Setup and configuration tasks.
+  - import_tasks: stop-and-destroy.yml
+  - import_tasks: setup.yml
+  - import_tasks: load-base-image.yml
+  - import_tasks: start.yml
+  - import_tasks: enable-on-firewall.yml
